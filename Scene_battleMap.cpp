@@ -3,6 +3,7 @@
 #include "Characters.h"
 #include "Portal.h"
 #include "Monster.h"
+#include "CoinBox.h"
 
 
 extern int direction_x, direction_y;
@@ -28,6 +29,11 @@ bool Scene_battleMap::init()
 	this->addChild(m_timer);
 	m_timer->setPosition(10, 50);
 
+<<<<<<< Updated upstream
+=======
+	
+
+>>>>>>> Stashed changes
 
 	Sprite* bg_UI = Sprite::create("menu_UI/background_UI.png");
 	bg_UI->setPosition(Point(0, visibleSize.height));
@@ -71,6 +77,19 @@ bool Scene_battleMap::init()
 	//MonsterManager* monsterMgr = MonsterManager::create();
 	//this->addChild(monsterMgr, 4);
 
+
+	auto coinTest = Coin::createCoin(false);
+	coinTest->setPosition(Vec2(250, 250));
+	coinTest->bindPlayer(m_player);
+	addChild(coinTest);
+	coinTest->disperseAni();
+
+	auto coinBoxTest = CoinBox::create();
+	addChild(coinBoxTest);
+	coinBoxTest->setPosition(250, 250);
+	coinBoxTest->showBox();
+	coinBoxTest->openAni();
+	//coinTest->setScheduler(Coin::update);
 	return true;
 }
 
