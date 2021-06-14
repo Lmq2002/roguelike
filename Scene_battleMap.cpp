@@ -6,6 +6,7 @@
 #include "CoinBox.h"
 
 
+
 extern int direction_x, direction_y;
 
 Scene* Scene_battleMap::createScene()
@@ -76,6 +77,7 @@ bool Scene_battleMap::init()
 	//MonsterManager* monsterMgr = MonsterManager::create();
 	//this->addChild(monsterMgr, 4);
 
+<<<<<<< Updated upstream
 
 	/*auto coinTest = Coin::createCoin(false);
 	coinTest->setPosition(Vec2(250, 250));
@@ -91,6 +93,12 @@ bool Scene_battleMap::init()
 	coinBoxTest->bindPlayer(m_player);
 	coinBoxTest->openAni();*/
 	//coinTest->setScheduler(Coin::update);
+=======
+	m_coinLabel= CoinLabel::create();
+	m_coinLabel->bindPlayer(m_player);
+	addChild(m_coinLabel);
+	m_coinLabel->setPosition(Vec2(visibleSize.width - 20, visibleSize.height - 20));
+>>>>>>> Stashed changes
 	return true;
 }
 

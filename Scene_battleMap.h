@@ -7,6 +7,11 @@
 #include "ui/CocosGUI.h"
 #include "editor-support/cocostudio/CCSGUIReader.h"
 #include "GameTimer.h"
+<<<<<<< Updated upstream
+=======
+#include "CoinBox.h"
+#include "CoinLabel.h"
+>>>>>>> Stashed changes
 using namespace ui;
 USING_NS_CC;
 using namespace cocostudio;
@@ -40,6 +45,10 @@ public:
 private:
 	Player* m_player;
 	GameTimer* m_timer;
+<<<<<<< Updated upstream
+=======
+	CoinLabel* m_coinLabel;
+>>>>>>> Stashed changes
 	int num_money;
 	LoadingBar* m_hpBar;
 	LoadingBar* m_mpBar;

@@ -10,6 +10,11 @@ Player::Player()
 	m_iHP = 10;
 	m_defence = 10;
 	m_speed = 2;
+	/*m_coinLabel = CoinLabel::create();
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	m_coinLabel->setPosition(visibleSize.width / 2 - 10, visibleSize.height / 2 - 10);
+	addChild(m_coinLabel);*/
+
 }
 
 bool Player::init()
@@ -355,6 +360,18 @@ void Player::resetData()
 	setScale(1.0f);
 	setRotation(0);
 }
+
+void Player::addCoin(int addNum)
+{
+	m_coin += addNum;
+}
+
+int Player::getCoin()
+{
+	return m_coin;
+}
+
+
 
 //void Player::special_ground()
 //{

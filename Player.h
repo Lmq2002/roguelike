@@ -3,7 +3,6 @@
 #define _Player_H_
 #include "HelloWorldScene.h"
 #include "Controller_Move.h"
-
 #include "Characters.h"
 class Player :public Characters
 {
@@ -35,7 +34,8 @@ public:
 	int getSpeed();
 
 	void resetData();
-
+	void addCoin(int addNum);
+	int getCoin();
 private:
 	TMXTiledMap* m_map;
 	//Player* m_player;
@@ -50,7 +50,11 @@ private:
 	Point tileCoordForPosition(Point pos);
 
 	
+<<<<<<< Updated upstream
 
+=======
+	/*CoinLabel* m_coinLabel;*/
+>>>>>>> Stashed changes
 	int m_iHP;  //主角血量
 	int m_defence;  //护盾值
 	int m_speed;
