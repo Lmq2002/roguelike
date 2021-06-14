@@ -29,11 +29,8 @@ bool Scene_battleMap::init()
 	this->addChild(m_timer);
 	m_timer->setPosition(10, 50);
 
-<<<<<<< Updated upstream
-=======
 	
 
->>>>>>> Stashed changes
 
 	Sprite* bg_UI = Sprite::create("menu_UI/background_UI.png");
 	bg_UI->setPosition(Point(0, visibleSize.height));
@@ -67,9 +64,11 @@ bool Scene_battleMap::init()
 
 	this->addChild(map);
 
+
 	addPlayer(map);  //加载骑士
 	addPortal(map);  //加载传送门
 	//addTimer();
+	addCoinBox(map);
 	
 	addMonster(map);
 
@@ -78,17 +77,19 @@ bool Scene_battleMap::init()
 	//this->addChild(monsterMgr, 4);
 
 
-	auto coinTest = Coin::createCoin(false);
+	/*auto coinTest = Coin::createCoin(false);
 	coinTest->setPosition(Vec2(250, 250));
 	coinTest->bindPlayer(m_player);
 	addChild(coinTest);
-	coinTest->disperseAni();
+	coinTest->disperseAni();*/
 
+	/*log("test!!!");
 	auto coinBoxTest = CoinBox::create();
 	addChild(coinBoxTest);
-	coinBoxTest->setPosition(250, 250);
+	coinBoxTest->setPosition(Vec2(250,250));
 	coinBoxTest->showBox();
-	coinBoxTest->openAni();
+	coinBoxTest->bindPlayer(m_player);
+	coinBoxTest->openAni();*/
 	//coinTest->setScheduler(Coin::update);
 	return true;
 }
@@ -97,7 +98,7 @@ void Scene_battleMap::update(float dt)
 {
 	m_defendBar->setPercent(m_player->getDefence() / 10.0f * 100);
 	m_hpBar->setPercent(m_player->getiHP() / 10.0f * 100);
-	log("Hp: %d", m_player->getiHP());
+	//log("Hp: %d", m_player->getiHP());
 }
 
 
@@ -248,6 +249,36 @@ void Scene_battleMap::addMonster(TMXTiledMap* map)
 
 		}
 	}
+
+}
+
+void Scene_battleMap::addCoinBox(TMXTiledMap* map)
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	//创建精灵
+	Sprite* coinBoxSprite = Sprite::create("coinBoxClose.png");
+
+	//将精灵绑定到玩家对象上
+	CoinBox* mCoinBox = CoinBox::create();
+	mCoinBox->bindSprite(coinBoxSprite);
+
+	TMXObjectGroup* objGroup = map->getObjectGroup("objects");
+
+	//加载传送门坐标对象
+	ValueMap portalMap = objGroup->getObject("coinBox");
+	float portalX = portalMap.at("x").asFloat();
+	float portalY = portalMap.at("y").asFloat();
+
+	//mPortal->setTiledMap(map);
+
+	mCoinBox->setPosition(Point(portalX, portalY));
+	mCoinBox->showBox();
+	mCoinBox->bindPlayer(m_player);
+	//mCoinBox->openAni();
+
+	map->addChild(mCoinBox, 4);
+
+
 
 }
 

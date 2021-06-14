@@ -37,26 +37,21 @@ void Coin::update(float dt)
 	}
 	else
 	{
-		//coin->stopAllActions();
-		if (isCollideWithPlayer())
+		Point pos = m_player->getPosition() - getParent()->getPosition();
+		if ((coin->getPosition() - pos).getLength()<20)
 		{
-			//removeChild(coin);
-			//unschedule(CC_SCHEDULE_SELECTOR(Coin::update));
-			log("coin position: (%f,%f)", getPosition().x, getPosition().y);
-			log("m_player position:(%f,%f)", m_player->getPosition().x, m_player->getPosition().y);
+			//log("able to xiaoshi!");
+			removeChild(coin);
+			unschedule(CC_SCHEDULE_SELECTOR(Coin::update));
 			return;
 		}
-		if ((coin->getPosition() - m_player->getPosition()).getLength()<100)
+		if (m_player)
 		{
-			return;
+			stopAllActions();
+			flyAni(m_player->getPosition());
 		}
-
-		//flyAni(m_player->getPosition());
-		flyAni(m_player->getPosition()-coin->getPosition());
 	}
-	log("m_player position:(%f,%f)", m_player->getPosition().x, m_player->getPosition().y);
-	log("coin position: (%f,%f)", getPosition().x, getPosition().y);
-	log("move:(%f,%f)", (m_player->getPosition() - coin->getPosition()).x, (m_player->getPosition() - coin->getPosition()).y);
+	
 }
 
 void Coin::disperseAni()
@@ -65,7 +60,8 @@ void Coin::disperseAni()
 	vec.set(random(-1.0f, 1.0f), random(-1.0f, 1.0f));
 	vec.normalize();
 	log("vec position:(%f,%f)",vec.x,vec.y);
-	auto disperse = MoveBy::create(1,  vec * random(1, 50));
+	auto disperse = MoveBy::create(1.0f,  vec * random(1, 50));
+
 	coin->runAction(disperse);
 }
 
@@ -76,9 +72,9 @@ void Coin::bindPlayer(Player* player)
 
 bool Coin::allowFlying()
 {
-	//return true;
-	Vec2 vec = getPosition() - m_player->getPosition();
-	if (vec.getLength() <= 1)
+	Vec2 pos = m_player->getPosition() - getParent()->getPosition();
+	Vec2 vec = getPosition() - pos;
+	if (vec.getLength() <= 50)
 	{
 		return true;
 	}
@@ -87,11 +83,19 @@ bool Coin::allowFlying()
 
 void Coin::flyAni(Vec2 target)
 {
-	Vec2 vecm = Vec2((int)m_player->getPosition().x - (int)coin->getPosition().x, (int)m_player->getPosition().y - (int)coin->getPosition().y);
-	//auto fly = MoveTo::create(target.getLength()/2, Vec2((int)target.x,(int)target.y));
-	auto fly = MoveBy::create(target.getLength() / 2,vecm );
-	
+	stopAllActions();
+	/*Point dstPos = this->getParent()->convertToNodeSpace(target);*/
+	Point dstPos =  target-this->getParent()->getPosition();
+	Point vecm =getParent()->getPosition()+ getPosition() - target;
+	auto fly = MoveTo::create(vecm.getLength()/50, dstPos);
 	coin->runAction(fly);
+	//stopAllActions();
+	log("dstPos position: (%f,%f,)", dstPos.x, dstPos.y);
+	log("m_player position:(%f,%f)", m_player->getPosition().x, m_player->getPosition().y);
+	log("target position:(%f,%f)", target.x, target.y);
+	log("coin position: (%f,%f)", getPosition().x, getPosition().y);
+	log("coinBox position:(%f,%f)", getParent()->getPosition().x, getParent()->getPosition().y);
+	
 }
 
 bool Coin::isCollideWithPlayer()
@@ -115,7 +119,7 @@ bool Coin::init()
 	{
 		coin->setColor(Color3B::BLUE);
 	}
-	//schedule(CC_SCHEDULE_SELECTOR(Coin::update));
+	schedule(CC_SCHEDULE_SELECTOR(Coin::update));
 	return true;
 }
 
@@ -125,10 +129,10 @@ bool Coin::isGolden(bool goldenType)
 	return goldenType;
 }
 
-void Coin::setPosition(Vec2 vec)
-{
-	coin->setPosition(vec);
-}
+//void Coin::setPosition(Vec2 vec)
+//{
+//	coin->setPosition(vec);
+//}
 
 Point Coin::getPosition()
 {

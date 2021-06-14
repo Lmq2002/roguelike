@@ -14,7 +14,7 @@ bool Monster::init()
 {
 	show();
 	//this->scheduleUpdateWithPriority(3);
-	schedule(CC_SCHEDULE_SELECTOR(Monster::update), 3);
+	schedule(CC_SCHEDULE_SELECTOR(Monster::update),1);
 	return true;
 }
 
@@ -104,7 +104,7 @@ void Monster::findAndAct()
 		//runAction(MoveBy::create(vec.getLength()/1, vec*random(vec.getLength()*0.1f,vec.getLength()*0.3f)));
 		Point vec1 = m_player->getPosition();
 		//vec1.normalize();
-		runAction(MoveTo::create(vec.getLength() / 50, vec1 + Vec2(random(-1.0f, 1.0f) * 10, random(-1.0f, 1.0f) * 10)));
+		runAction(MoveTo::create(vec.getLength() / 100, vec1 + Vec2(random(-1.0f, 1.0f) * 10, random(-1.0f, 1.0f) * 10)));
 	}
 
 }

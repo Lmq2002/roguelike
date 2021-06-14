@@ -22,7 +22,7 @@ public:
 	bool isCollideWithPlayer();
 	bool init();
 	bool isGolden(bool goldenType);
-	void setPosition(Vec2 vec);
+	//void setPosition(Vec2 vec);
 	Point getPosition();
 	CREATE_FUNC(Coin);
 	

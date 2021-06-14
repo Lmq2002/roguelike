@@ -30,6 +30,8 @@ public:
 
 	void addMonster(TMXTiledMap* map);//添加怪物
 
+	void addCoinBox(TMXTiledMap* map);//添加箱子
+
 	void addTimer();
 
 	//void special_ground();   //特殊地板上的特殊行为
