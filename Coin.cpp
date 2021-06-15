@@ -41,10 +41,7 @@ void Coin::update(float dt)
 		if ((coin->getPosition() - pos).getLength()<20)
 		{
 			//log("able to xiaoshi!");
-<<<<<<< Updated upstream
-=======
 			m_player->addCoin(1);
->>>>>>> Stashed changes
 			removeChild(coin);
 			unschedule(CC_SCHEDULE_SELECTOR(Coin::update));
 			return;

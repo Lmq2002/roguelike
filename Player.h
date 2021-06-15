@@ -50,11 +50,7 @@ private:
 	Point tileCoordForPosition(Point pos);
 
 	
-<<<<<<< Updated upstream
-
-=======
 	/*CoinLabel* m_coinLabel;*/
->>>>>>> Stashed changes
 	int m_iHP;  //主角血量
 	int m_defence;  //护盾值
 	int m_speed;

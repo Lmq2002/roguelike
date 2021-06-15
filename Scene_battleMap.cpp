@@ -3,7 +3,6 @@
 #include "Characters.h"
 #include "Portal.h"
 #include "Monster.h"
-#include "CoinBox.h"
 
 
 
@@ -77,28 +76,10 @@ bool Scene_battleMap::init()
 	//MonsterManager* monsterMgr = MonsterManager::create();
 	//this->addChild(monsterMgr, 4);
 
-<<<<<<< Updated upstream
-
-	/*auto coinTest = Coin::createCoin(false);
-	coinTest->setPosition(Vec2(250, 250));
-	coinTest->bindPlayer(m_player);
-	addChild(coinTest);
-	coinTest->disperseAni();*/
-
-	/*log("test!!!");
-	auto coinBoxTest = CoinBox::create();
-	addChild(coinBoxTest);
-	coinBoxTest->setPosition(Vec2(250,250));
-	coinBoxTest->showBox();
-	coinBoxTest->bindPlayer(m_player);
-	coinBoxTest->openAni();*/
-	//coinTest->setScheduler(Coin::update);
-=======
 	m_coinLabel= CoinLabel::create();
 	m_coinLabel->bindPlayer(m_player);
 	addChild(m_coinLabel);
 	m_coinLabel->setPosition(Vec2(visibleSize.width - 20, visibleSize.height - 20));
->>>>>>> Stashed changes
 	return true;
 }
 
