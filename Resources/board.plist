@@ -4,33 +4,33 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>coinBoxClose.png</key>
+            <key>board1.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{60,59}</string>
+                <string>{422,184}</string>
                 <key>spriteSourceSize</key>
-                <string>{60,59}</string>
+                <string>{422,184}</string>
                 <key>textureRect</key>
-                <string>{{0,0},{60,59}}</string>
+                <string>{{0,0},{422,184}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>coinBoxOpen.png</key>
+            <key>board2.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{100,57}</string>
+                <string>{422,184}</string>
                 <key>spriteSourceSize</key>
-                <string>{100,57}</string>
+                <string>{422,184}</string>
                 <key>textureRect</key>
-                <string>{{60,0},{100,57}}</string>
+                <string>{{422,0},{422,184}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -44,13 +44,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>coinBox.png</string>
+            <string>board.png</string>
             <key>size</key>
-            <string>{160,59}</string>
+            <string>{844,184}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:2fed1b83d83d2c4c1c406487bc470cb6:ec88282b2bf071283a98019bd4bbfe4a:0a17894dcb17acaeebe7d260759fabe1$</string>
+            <string>$TexturePacker:SmartUpdate:c3c047f31eff893e02c881817a9e8e7e:6c0fcb9a20365062330b2fb9d096cff4:a1c005c5c1cef0262ec56454ccaf41ae$</string>
             <key>textureFileName</key>
-            <string>coinBox.png</string>
+            <string>board.png</string>
         </dict>
     </dict>
 </plist>
