@@ -21,9 +21,34 @@ public:
 	virtual void setTagPosition(int x, int y);
 	virtual Point getTagPosition();
 
+	void setTiledMap(TMXTiledMap* map);
+
+	//将像素坐标转换为地图格子坐标
+	Point tileCoordForPosition(Point pos);
+
 protected:
 	Sprite* m_sprite;
 	mController* m_controller;
+	TMXTiledMap* m_map;
+	//检测碰撞的地图层
+	TMXLayer* meta;
+	TMXLayer* wooden_case;
+	//TMXLayer* barrier_fence_ice;
+
+	clock_t  start_time;
+	float nowTime;
+
+	int time;
+	int time_2;
+	int time_3;
+	int time_4;
+	int time_5;
+	int _time = 0;
+	int record_time_defence;
+	int record_time;
+
+private:
+
 };
 
 

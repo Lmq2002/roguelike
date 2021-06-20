@@ -1,101 +1,80 @@
 #include "Scene_battleMap.h"
-#include "Controller_Move.h"
-#include "Characters.h"
-#include "Portal.h"
-#include "Monster.h"
-
+#include "SafeMap.h"
+#include "GameBeginScene.h"
 
 extern int direction_x, direction_y;
 
-Scene* Scene_battleMap::createScene()
-{
-	//Size winSize = Director::getInstance()->getWinSize();
-	auto scene = Scene::create();
-	auto layer = Scene_battleMap::create();
-
-
-	scene->addChild(layer);
-
-	return scene;
-}
-
-bool Scene_battleMap::init()
-{
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	if (!Layer::init())return false;
-
-	Sprite* bg_UI = Sprite::create("menu_UI/background_UI.png");
-	bg_UI->setPosition(Point(0, visibleSize.height));
-	bg_UI->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
-	bg_UI->setScale(0.5f);
-	this->addChild(bg_UI, 2);
-
-	loadUI();
-
-	this->scheduleUpdate();
-
-	/*加载Tiled地图，添加到场景中*/
-	TMXTiledMap* map = TMXTiledMap::create("battleMap_ice.tmx");
-	//map->setScale(15/32);
-	//map->getLayer("background");
-	
-	//Sprite* map = Sprite::create("battleMap_ice.png");
-	//map->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	//map->setContentSize(Size(4800, 6000));
-	//map->setPosition(Vec2(Director::getInstance()->getVisibleSize() / 2));
-	//log("mapSize:%f,%f", map->getContentSize().width,map->getContentSize().height);
-	//log("mapNum:%f,%f", map->getMapSize().width, map->getMapSize().height);
-	//log("TiledSize:%f, %f", map->getTileSize().width, map->getTileSize().height);
-	/******************************************
-	此处显示地图大小错误
-	是造成后面一系列错位原因的根本
-	所在!!!!!!!!!!
-	如何解决？？？？
-	********************************************/
-
-
-	this->addChild(map);
-
-	addPlayer(map);  //加载骑士
-	addPortal(map);  //加载传送门
-
-	
-	addMonster(map);
-
-	//创建怪物管理器
-	//MonsterManager* monsterMgr = MonsterManager::create();
-	//this->addChild(monsterMgr, 4);
-
-	return true;
-}
+//Scene* Scene_battleMap::createScene()
+//{
+//	//Size winSize = Director::getInstance()->getWinSize();
+//	auto scene = Scene::create();
+//	auto layer = Scene_battleMap::create();
+//
+//
+//	scene->addChild(layer);
+//
+//	return scene;
+//}
 
 void Scene_battleMap::update(float dt)
 {
+	//auto weapon_move = MoveBy::create(0.0f, Point(10, 0));
+	//m_weapon->runAction(weapon_move);
+
 	m_defendBar->setPercent(m_player->getDefence() / 10.0f * 100);
 	m_hpBar->setPercent(m_player->getiHP() / 10.0f * 100);
-	log("Hp: %d", m_player->getiHP());
+	m_mpBar->setPercent(m_player->getiMP() / 200.0f * 100);
+	//log("Hp: %d", m_player->getiHP());
+
+
+	if (!m_player->isAlive())
+	{
+		m_player->setVisible(false);
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("death.mp3");
+		CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+		CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("menu.mp3");
+		Director::getInstance()->replaceScene(SafeMap::createScene());
+	}
 }
-
-
 
 void Scene_battleMap::addPlayer(TMXTiledMap* map)
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 
 	//创建精灵
-	Sprite* playerSprite = Sprite::create("boy_run1.png");
 
-	//将精灵绑定到玩家对象上
-	m_player = Player::create();
-	m_player->bindSprite(playerSprite);
+
+	//*****************************************************将精灵绑定到玩家对象上
+	if (m_player == NULL)
+	{
+		Sprite* playerSprite = Sprite::create("boy_run1.png");
+
+		m_player = Player::create();
+		m_player->bindSprite(playerSprite);
+	}
+
+
+	//RecordData::bindPlayer(m_player);
+
 	m_player->setContentSize(Size(40, 40));
-	//m_player->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	//m_player->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+
+	m_player->addWeapon();
+	m_player->addKnife();
 
 
-    //由于addPlayer函数只会调用一次，我们就用update不断更新，带到转向的目的
+
+	//****************************************************为人物添加武器
+	//Sprite* m_gun = Sprite::create("Gun/Gun0.png");
+	//Weapons* m_weapon = Weapons::create();
+	//m_weapon->bindSprite(m_gun);
+	//m_weapon->set_position();
+	//m_player->addChild(m_weapon, 4);
+
+	//由于addPlayer函数只会调用一次，我们就用update不断更新，带到转向的目的
 	//mPlayer->run();
 	m_player->scheduleUpdate();
-	
+
 	//mPlayer->run();
 	//log("dir %d", direction_x);
 	//if (direction_x == 1)
@@ -106,18 +85,18 @@ void Scene_battleMap::addPlayer(TMXTiledMap* map)
 	//{
 	//	mPlayer->run_left();
 	//}
-	m_player->setTiledMap(map);
+	m_player->setTiledMap(map);//放入地图
 
 	//设置玩家坐标
 	TMXObjectGroup* objGroup = map->getObjectGroup("objects");
 
-	//加载玩家坐标对象
+	//******************************************************************加载玩家坐标对象
 	ValueMap playerPointMap = objGroup->getObject("player_position");
 	float playerX = playerPointMap.at("x").asFloat();
 	float playerY = playerPointMap.at("y").asFloat();
-	//log("player_position:%lf, %lf", playerPointMap.at("x"), playerPointMap.at("y"));
+	//log("player_position:%f, %f", m_player->getPosition().x, playerPointMap.at("y"));
 	/*********************************************
-	* 
+	*
 	此处位置信息获取错误！！！！！！
 	player_position:346.874969, 918.749939
 
@@ -138,14 +117,53 @@ void Scene_battleMap::addPlayer(TMXTiledMap* map)
 
 	//设置控制器到主角身上
 	m_player->setController(controller_move);
+	//m_player->addWeapon();
 
 	//将玩家添加到地图,1代表层数
-	map->addChild(m_player, 0);
+	map->addChild(m_player, 3);
+	//log("player_position:%f, %f", m_weapon->getPosition().x, m_weapon->getPosition().y);
+	//addPersistRootNode(this.node);          // 将该节点添加为常驻节点
+
+	auto audio = SimpleAudioEngine::getInstance();
+	if (!audio->isBackgroundMusicPlaying()) {
+		audio->playBackgroundMusic("battleBgm.mp3", true);
+	}
 
 
 	////添加到场景中
 	//this->addChild(controller_move);
 }
+
+//void Scene_battleMap::addWeapon(TMXTiledMap* map)
+//{
+//	Size visibleSize = Director::getInstance()->getVisibleSize();
+//
+//	Sprite* m_gun = Sprite::create("Gun/Gun0.png");
+//	//m_weapon->set_position();
+//	TMXObjectGroup* objGroup = map->getObjectGroup("objects");
+//
+//	//加载传送门坐标对象
+//	ValueMap weaponMap = objGroup->getObject("weapon");
+//	float weaponX = weaponMap.at("x").asFloat();
+//	float weaponY = weaponMap.at("y").asFloat();
+//
+//	Point beg_pos = Point(weaponX, weaponY);
+//
+//	Weapons* m_weapon = NULL;
+//	m_weapon = Weapons::create();
+//	m_weapon->bindPlayer(m_player);
+//	m_weapon->bindSprite(m_gun);
+//
+//	//m_weapon->setPosition(beg_pos);
+//	m_weapon->set_position();
+//
+//	//m_weapon->setDirection(m_weapon->getPosition());
+//
+//	map->addChild(m_weapon, 4);
+//	//m_player->addChild(m_weapon, 4);
+//
+//
+//}
 
 void Scene_battleMap::addPortal(TMXTiledMap* map)
 {
@@ -154,11 +172,14 @@ void Scene_battleMap::addPortal(TMXTiledMap* map)
 	Sprite* portalSprite = Sprite::create("portal_1.png");
 
 	//将精灵绑定到玩家对象上
-	Portal* mPortal = Portal::create();
+	mPortal = Portal::create();
 	mPortal->bindSprite(portalSprite);
+	mPortal->bindPlayer(m_player);  //绑定玩家，检测碰撞
 	mPortal->act();
 	//mPortal->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	mPortal->setScale(1.5f);
+	//mPortal->type = 1;
+
 
 	//设置传送门坐标
 	TMXObjectGroup* objGroup = map->getObjectGroup("objects");
@@ -182,14 +203,12 @@ void Scene_battleMap::addMonster(TMXTiledMap* map)
 
 	TMXObjectGroup* mstGroup = map->getObjectGroup("Monsters");
 
-	ValueVector tempArray = mstGroup->getObjects();
+	ValueVector mstArray = mstGroup->getObjects();
 
 	//float x, y, w, h;
 
-	for each (Value mstPointMap in tempArray)
+	for each (Value mstPointMap in mstArray)
 	{
-
-
 		ValueMap mstPoint = mstPointMap.asValueMap();
 		float posX = mstPoint.at("x").asFloat();
 		float posY = mstPoint.at("y").asFloat();
@@ -209,23 +228,104 @@ void Scene_battleMap::addMonster(TMXTiledMap* map)
 			Monster* mMonster = NULL;
 			if (type == "striker")
 			{
-				mMonster = Monster::create();
-				//mMonster->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+				mMonster = MonsterStriker::create();
+				mMonster->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 
 				mMonster->bindPlayer(m_player);
 				mMonster->bindSprite(Sprite::create("mst_scorer2.png"));
+				//if (m_player->getPBullet() != NULL)
+					//mMonster->bindBullet(m_player->getPBullet());
 
 	
 				//Point mstPoint;
 				mMonster->setPosition(monsterPoint);
-				map->addChild(mMonster, 1);
 
+
+				map->addChild(mMonster, 3);
+				mMonster->setTiledMap(map);//放入地图
+
+				//怪物创建时一一加入list
+				if (mMonster->isAlive())
+					monsterList.pushBack(mMonster);
+			}
+			if (type == "pig")
+			{
+				mMonster = MonsterPig::create();
+				mMonster->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+				mMonster->setScale(0.8f);
+
+				mMonster->bindPlayer(m_player);
+				mMonster->bindSprite(Sprite::create("wild_pig.png"));
+				
+				mMonster->setPosition(monsterPoint);
+
+				map->addChild(mMonster, 3);
+				mMonster->setTiledMap(map);//放入地图
+
+				//怪物创建时一一加入list
+				if (mMonster->isAlive())
+					monsterList.pushBack(mMonster);
 			}
 
 		}
 	}
 
+	//m_player->getMonsterList(monsterList);
+
 }
+
+void Scene_battleMap::addBox(TMXTiledMap* map)
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+
+	TMXObjectGroup* objGroup = map->getObjectGroup("objects");
+
+	ValueVector objArray = objGroup->getObjects();
+
+	//float x, y, w, h;
+
+	for each (Value objPointMap in objArray)
+	{
+		ValueMap objPoint = objPointMap.asValueMap();
+		float posX = objPoint.at("x").asFloat();
+		float posY = objPoint.at("y").asFloat();
+
+
+		Point monsterPoint = Point(posX, posY);
+		/*	posY -= this->getTileSize().height;
+			Point tileXY = this->positionToTileCoord(ccp(posX, posY));
+			std::string name = objPoint.at("name").asString();
+			std::string type = objPoint.at("type").asString();*/
+
+		std::string name = objPoint.at("name").asString();
+		//std::string type = objPoint.at("type").asString();
+
+		if (name == "box")
+		{
+			//创建精灵
+			Sprite* coinBoxSprite = Sprite::create("coinBoxClose.png");
+
+			//将精灵绑定到玩家对象上
+			CoinBox* mCoinBox = CoinBox::create();
+			mCoinBox->bindSprite(coinBoxSprite);
+			
+
+			mCoinBox->setPosition(monsterPoint);
+			mCoinBox->showBox();
+			mCoinBox->bindPlayer(m_player);
+			//mCoinBox->openAni();
+
+			map->addChild(mCoinBox, 4);
+
+
+		}
+	}
+
+
+	
+}
+
+
 
 void Scene_battleMap::loadUI()
 {
@@ -282,7 +382,207 @@ void Scene_battleMap::loadUI()
 	m_defendBar->setScale(0.5f);
 }
 
-//void Scene_battleMap::special_ground()
-//{
-//
-//}
+void Scene_battleMap::bottomUI()
+{
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	//创建两个精灵
+	auto unselected = Sprite::create("gun_buttum.png");
+	auto selected = Sprite::create("buttum_redGun.png");
+	//auto select = Sprite::create("buttum_redGun.png");
+
+
+	//创建两个精灵菜单项
+	auto unselectedSpriteItem = MenuItemSprite::create(unselected, unselected);
+	auto selectedSpriteItem = MenuItemSprite::create(selected, selected);
+	//auto selectSpriteItem = MenuItemSprite::create(select, select);
+
+	//创建一个开关菜单项
+	auto toggleItem = MenuItemToggle::createWithCallback([&](Ref* ref) {
+		auto item = dynamic_cast<MenuItemToggle*>(ref);
+		if (item)
+		{
+			if (item->getSelectedIndex() == 0)
+			{
+				m_player->setBulletType("Gun");
+			}
+			else if (item->getSelectedIndex() == 1)
+			{
+				m_player->setBulletType("redGun");
+			}
+
+		}
+		}, unselectedSpriteItem, selectedSpriteItem, NULL);
+	toggleItem->setAnchorPoint(Vec2::ANCHOR_MIDDLE);//锚点设置
+	toggleItem->setPosition(Point(visibleSize.width - 40, 40));
+
+	Menu* menu = Menu::create(toggleItem, NULL);
+	menu->setPosition(Vec2::ZERO);  //重新设置菜单位置
+	this->addChild(menu,5);
+}
+
+void Scene_battleMap::registeKeyBoardEvent()
+{
+	auto listener = EventListenerKeyboard::create();
+
+	listener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event* event) {
+		if (keyCode == EventKeyboard::KeyCode::KEY_F) {
+			if (mPortal->isCollisionWithPlayer()) {
+
+				for (auto monster : monsterList) {
+					if (monster->isAlive()) {
+						return;
+					}
+				}
+			}
+			if (mPortal->type == 1)
+				Director::getInstance()->replaceScene(Scene_battleMap_2::createScene());
+			if (mPortal->type == 2) {
+				CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+				Director::getInstance()->replaceScene(GameBeginScene::createScene());
+			}
+		}
+
+	};
+	listener->onKeyReleased = [&](EventKeyboard::KeyCode keyCode, Event* event) {
+		if (keyCode == EventKeyboard::KeyCode::KEY_F) {
+			
+		}
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+}
+
+
+//**************************************************************
+
+
+
+
+Scene* Scene_battleMap_1::createScene()
+{
+	auto scene = Scene::create();
+	auto layer = Scene_battleMap_1::create();
+
+
+	scene->addChild(layer);
+
+	return scene;
+}
+
+bool Scene_battleMap_1::init()
+{
+	//registeTouchEvent();
+	//map_name = "battleMap_ice.tmx"; 
+	registeKeyBoardEvent();
+
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	if (!Layer::init())return false;
+
+	Sprite* bg_UI = Sprite::create("menu_UI/background_UI.png");
+	bg_UI->setPosition(Point(0, visibleSize.height));
+	bg_UI->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
+	bg_UI->setScale(0.5f);
+	this->addChild(bg_UI, 2);
+
+	//addMap();
+
+	loadUI();
+	bottomUI();
+
+
+	this->scheduleUpdate();
+
+	/*加载Tiled地图，添加到场景中*/
+
+	map = TMXTiledMap::create("battleMap_ice.tmx");
+
+	this->addChild(map);
+
+
+
+	addPlayer(map);  //加载骑士
+	addMonster(map);
+
+	m_player->getMonsterList(monsterList);   //人物怪物都添加好了之后，就可以将MonsterList传给人物了
+
+
+	//addmWeapon(map);
+	//addWeapon(map);
+	addPortal(map);  //加载传送门
+	mPortal->type = 1;
+	
+
+	addBox(map);
+	
+	m_coinLabel = CoinLabel::create();
+	m_coinLabel->bindPlayer(m_player);
+	addChild(m_coinLabel);
+	m_coinLabel->setPosition(Vec2(visibleSize.width - 20, visibleSize.height - 20));
+
+
+	return true;
+}
+
+
+
+
+
+//*******************************************
+Scene* Scene_battleMap_2::createScene()
+{
+	auto scene = Scene::create();
+	auto layer = Scene_battleMap_2::create();
+
+
+	scene->addChild(layer);
+
+	return scene;
+}
+
+
+bool Scene_battleMap_2::init()
+{
+	registeKeyBoardEvent();
+
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	if (!Layer::init())return false;
+
+	Sprite* bg_UI = Sprite::create("menu_UI/background_UI.png");
+	bg_UI->setPosition(Point(0, visibleSize.height));
+	bg_UI->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
+	bg_UI->setScale(0.5f);
+	this->addChild(bg_UI, 2);
+
+	loadUI();
+	bottomUI();
+	
+
+	this->scheduleUpdate();
+
+	/*加载Tiled地图，添加到场景中*/
+	TMXTiledMap* map = TMXTiledMap::create("BattleMap_ice_2.tmx");
+
+	this->addChild(map);
+
+	addPlayer(map);  //加载骑士
+
+	addMonster(map);
+
+	m_player->getMonsterList(monsterList);   //人物怪物都添加好了之后，就可以将MonsterList传给人物了
+
+	addPortal(map);  //加载传送门
+	mPortal->type = 2;
+
+	addBox(map);
+
+	m_coinLabel = CoinLabel::create();
+	m_coinLabel->bindPlayer(m_player);
+	addChild(m_coinLabel);
+	m_coinLabel->setPosition(Vec2(visibleSize.width - 20, visibleSize.height - 20));
+
+	return true;
+}
+
+
+

@@ -25,6 +25,7 @@ bool Controller_Move::init()
 
 void Controller_Move::update(float dt)
 {
+
 	if (m_controllerListener == NULL) {
 		return;
 	}

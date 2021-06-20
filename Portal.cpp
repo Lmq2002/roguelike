@@ -34,6 +34,24 @@ void Portal::act()
 	//addChild()
 }
 
+void Portal::update(float dt)
+{
+	
+}
+
+bool Portal::isCollisionWithPlayer()
+{
+	if (getBoundingBox().containsPoint(m_player->getPosition())) {
+		return true;
+	}
+	return false;
+}
+
+void Portal::bindPlayer(Player* player)
+{
+	m_player = player;
+}
+
 //void Portal::setTiledMap(TMXTiledMap* map)
 //{
 //	this->m_map = map;

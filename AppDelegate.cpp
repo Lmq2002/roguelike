@@ -25,6 +25,8 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
 #include "Scene_battleMap.h"
+#include "GameBeginScene.h"
+#include "SafeMap.h"
 
 // #define USE_AUDIO_ENGINE 1
 
@@ -111,8 +113,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    //auto scene = HelloWorld::createScene();
-    auto scene = Scene_battleMap::createScene();
+    //auto scene = SafeMap::createScene();
+    auto scene = GameBeginScene::createScene();
 
     // run
     director->runWithScene(scene);
